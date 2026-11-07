@@ -5,7 +5,7 @@ utilisables avec Claude Code, opencode et tout agent compatible.
 
 | Skill | Description |
 |---|---|
-| [`semver-batch-workflow`](skills/semver-batch-workflow/SKILL.md) | Workflow Git/GitHub par lots de version semver : issues typées, ordre patch → minor → major, branche de lot et sous-branches par issue, PR unique vers `main`, preflight conditionnel, gates CI optimisées en temps, release automatique avec bump. |
+| [`semver-batch-workflow`](skills/semver-batch-workflow/SKILL.md) | Workflow Git/GitHub par lots de version semver : epics et issues typées (sous-issues), board kanban GitHub Projects, ordre patch → minor → major, branche de lot et sous-branches par issue, PR unique vers `main`, preflight conditionnel, gates CI optimisées en temps, release automatique avec bump. |
 
 ## Installation
 
