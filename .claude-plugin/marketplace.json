@@ -1,0 +1,19 @@
+{
+  "name": "willisback-skills",
+  "owner": {
+    "name": "WillIsback",
+    "url": "https://github.com/WillIsback"
+  },
+  "metadata": {
+    "description": "Skills d'agent de WillIsback, portables entre Claude Code, opencode et autres agents compatibles Agent Skills."
+  },
+  "plugins": [
+    {
+      "name": "semver-batch-workflow",
+      "description": "Workflow Git/GitHub par lots de version semver : issues typées, branches de lot, PR unique vers main, gates CI optimisées, release automatique.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/semver-batch-workflow"]
+    }
+  ]
+}
