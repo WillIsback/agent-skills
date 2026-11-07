@@ -1,0 +1,9 @@
+{
+  "description": "Python avec uv : ruff, mypy strict, pytest + couverture, version depuis les tags (hatch-vcs).",
+  "LOCAL_CHECKS": "uv run ruff check . && uv run ruff format --check . && uv run mypy\nuv run pytest -m \"not integration\"",
+  "DEV_COMMANDS": "uv sync\nuv run ruff check . && uv run ruff format --check . && uv run mypy\nuv run pytest -m \"not integration\"",
+  "DEV_COMMANDS_DOCKER": "uv sync\nuv run pytest -m \"not integration\"\nuv run uvicorn __PACKAGE__.api.app:app --reload\ndocker build -t __DIST_NAME__ . && docker run --rm -p 8000:8000 --env-file .env __DIST_NAME__",
+  "GATES_ROWS": "| `ci-code-quality` | ruff (lint, format), mypy strict, lockfile uv ; titre de PR, actionlint, zizmor |\n| `ci-test` | pytest sans réseau + couverture ≥ 80 % |\n| `ci-codeql` | CodeQL `security-extended` Python et Actions, si modifiés |",
+  "GATES_ROWS_DOCKER": "| `ci-code-quality` | ruff (lint, format), mypy strict, lockfile uv ; titre de PR, actionlint, zizmor |\n| `ci-test` | pytest sans réseau + couverture ≥ 80 % ; build de l'image Docker si Dockerfile ou dépendances changent |\n| `ci-codeql` | CodeQL `security-extended` Python et Actions, si modifiés |",
+  "post_commands": ["uv lock", "uv sync", "uv run ruff format .", "uv run ruff check .", "uv run mypy", "uv run pytest -q"]
+}

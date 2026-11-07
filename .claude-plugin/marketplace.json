@@ -13,7 +13,18 @@
       "description": "Workflow Git/GitHub par lots de version semver : issues typées, branches de lot, PR unique vers main, gates CI optimisées, release automatique.",
       "source": "./",
       "strict": false,
-      "skills": ["./skills/semver-batch-workflow"]
+      "skills": [
+        "./skills/semver-batch-workflow"
+      ]
+    },
+    {
+      "name": "semver-repo-setup",
+      "description": "Met en place un dépôt complet avec le workflow lots semver : outillage, CI/CD, GitHub, board kanban et backlog.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/semver-repo-setup"
+      ]
     }
   ]
 }
