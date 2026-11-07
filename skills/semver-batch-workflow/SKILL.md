@@ -1,6 +1,6 @@
 ---
 name: semver-batch-workflow
-description: Workflow Git/GitHub de William (WillIsback) — issues typées, lots de version semver (patch → minor → major), branche de lot + sous-branches par issue, PR unique vers main, gates CI optimisées en temps, release automatique avec bump. À utiliser pour préparer un dépôt (CI/CD, templates, outillage CodeGraph/Aikido/CodeQL) ou pour planifier, exécuter et livrer un lot de travail dans un de ses projets.
+description: Workflow Git/GitHub de William (WillIsback) — epics et issues typées, board kanban GitHub Projects, lots de version semver (patch → minor → major), branche de lot + sous-branches par issue, PR unique vers main, gates CI optimisées en temps, release automatique avec bump. À utiliser pour préparer un dépôt (CI/CD, templates, outillage CodeGraph/Aikido/CodeQL) ou pour planifier, exécuter et livrer un lot de travail dans un de ses projets.
 ---
 
 # Workflow « lots de version semver »
@@ -16,7 +16,13 @@ Méthode de travail de William Derue (GitHub : WillIsback). Indépendante de l'o
 - Chaque issue porte son impact semver : `fix`/`perf` → patch, `feat` → minor,
   breaking change (`!`) → major ; `docs`/`chore`/`test`/`ci`/`refactor` → pas de release
   seule.
-- Les issues sont suivies dans le Project GitHub du dépôt.
+- Hiérarchie **epic → user story → tâche** via les sous-issues GitHub :
+  - epic = issue parente fonctionnelle (label `type:epic`, sans milestone), peut
+    couvrir plusieurs lots ;
+  - user story = sous-issue de l'epic, c'est elle qu'on range dans un lot et qu'on
+    traite sur une sous-branche ;
+  - tâche = sous-issue de la user story, ou checklist dans son corps si elle est petite.
+- Les issues sont suivies dans le Project GitHub du dépôt (voir §9).
 
 ## 2. Lots de version et ordre de traitement
 
@@ -102,3 +108,47 @@ Le temps d'exécution des workflows conditionne l'efficacité. Toujours :
   gates requises), Dependabot groupé avec auto-merge si les gates sont vertes.
 - Docs : `CONTRIBUTING.md` (flux, gates, vérifications locales) et `AGENTS.md`
   qui pointe vers ce workflow.
+
+## 9. Board kanban (GitHub Projects)
+
+Un Project par dépôt, lié au dépôt. Colonnes = champ **Status** :
+
+| Status | Signification | Déplacée par |
+|---|---|---|
+| Backlog | issue créée, sans milestone | workflow « Auto-add » |
+| Planifié | rattachée à un milestone (= lot) | l'agent/l'humain en posant le milestone |
+| En cours | sous-branche `<type>/<version>-<tâche>` ouverte | l'agent au démarrage de la tâche |
+| Intégré au lot | sous-branche fusionnée dans la branche de lot | l'agent après la fusion |
+| Fait | PR de lot fusionnée sur main, issue fermée | workflow « Item closed » |
+
+- **`Closes #N` ne ferme l'issue qu'au merge sur la branche par défaut** : une
+  sous-branche fusionnée dans le lot laisse l'issue ouverte (c'est voulu). La colonne
+  « Intégré au lot » n'est pas automatisable par les workflows intégrés : l'agent la
+  met à jour avec `gh project item-edit`.
+- Milestones = lots, **avec date d'échéance** (vue Roadmap). Trier par milestone
+  respecte l'ordre semver, donc la règle patch → minor → major (`v0.1.1` < `v0.2.0`).
+- Epics sans Status (hors kanban) ; leur avancement se lit via « Sub-issues progress ».
+- Vues (à créer dans l'interface, l'API ne gère pas les vues) :
+  1. **Kanban** : Board, colonnes Status, Group by Milestone, filtre `-label:type:epic`.
+  2. **Lot en cours** : Board filtré `milestone:<lot> -label:type:epic`, limite 2 sur « En cours ».
+  3. **Roadmap** : Roadmap sur les dates de Milestone, Group by Parent issue.
+  4. **Epics** : Table `label:type:epic` avec la colonne Sub-issues progress.
+- Workflows intégrés : Auto-add (→ Backlog), Item closed (→ Fait), Item reopened (→ En cours).
+
+Commandes utiles pour l'agent :
+
+```bash
+# identifiants
+gh project view <N> --owner <owner> --format json --jq .id
+gh project field-list <N> --owner <owner> --format json \
+  --jq '.fields[]|select(.name=="Status")'
+gh project item-list <N> --owner <owner> --format json --limit 200
+# déplacer une carte
+gh project item-edit --project-id <PID> --id <ITEM_ID> \
+  --field-id <STATUS_FIELD_ID> --single-select-option-id <OPTION_ID>
+# rattacher une user story à une epic (id REST de l'issue enfant, pas son numéro)
+gh api -X POST repos/<owner>/<repo>/issues/<epic>/sub_issues \
+  -F sub_issue_id=$(gh api repos/<owner>/<repo>/issues/<n> --jq .id)
+```
+
+Le scope `project` est requis : `gh auth refresh -h github.com -s project`.
