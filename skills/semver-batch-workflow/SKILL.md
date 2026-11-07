@@ -1,6 +1,6 @@
 ---
 name: semver-batch-workflow
-description: Workflow Git/GitHub de William (WillIsback) — epics et issues typées, board kanban GitHub Projects, lots de version semver (patch → minor → major), branche de lot + sous-branches par issue, PR unique vers main, gates CI optimisées en temps, release automatique avec bump. À utiliser pour préparer un dépôt (CI/CD, templates, outillage CodeGraph/Aikido/CodeQL) ou pour planifier, exécuter et livrer un lot de travail dans un de ses projets.
+description: Workflow Git/GitHub de William (WillIsback) — epics et issues typées, board kanban GitHub Projects, lots de version semver (patch → minor → major), branche de lot + sous-branches par issue, PR unique vers main, gates CI optimisées en temps, release automatique avec bump. À utiliser pour planifier, exécuter et livrer un lot de travail (issues, branches, board, PR, release) dans un de ses projets ; pour la mise en place initiale d'un dépôt, utiliser semver-repo-setup.
 ---
 
 # Workflow « lots de version semver »
