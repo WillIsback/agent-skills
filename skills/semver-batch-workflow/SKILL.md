@@ -100,6 +100,8 @@ Le temps d'exécution des workflows conditionne l'efficacité. Toujours :
 
 ## 8. Outillage standard d'un dépôt
 
+Mise en place automatisée : skill `semver-repo-setup` (scaffold + réglages GitHub + board + backlog).
+
 - **CodeGraph** : index `.codegraph/` (`codegraph init`), serveur MCP déclaré dans
   `.mcp.json`, permissions des outils codegraph dans la config de l'agent.
 - **Aikido** : app GitHub connectée au dépôt, dossier `.aikido`, scans via MCP.
