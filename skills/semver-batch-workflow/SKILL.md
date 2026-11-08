@@ -180,7 +180,9 @@ Un Project par dépôt, lié au dépôt. Colonnes = champ **Status** :
   met à jour avec `gh project item-edit`.
 - Milestones = lots, **avec date d'échéance** (vue Roadmap). Trier par milestone
   respecte l'ordre semver, donc la règle patch → minor → major (`v0.1.1` < `v0.2.0`).
-- Epics sans Status (hors kanban) ; leur avancement se lit via « Sub-issues progress ».
+- Epics **ouvertes** sans Status (hors kanban) ; leur avancement se lit via « Sub-issues progress ».
+  Une epic **fermée** passe en **Fait** (workflow « Item closed ») : ne jamais retirer le
+  statut d'une epic fermée, sinon elle s'affiche dans « No Status ».
 - Vues (à créer dans l'interface, l'API ne gère pas les vues) :
   1. **Kanban** : Board, colonnes Status, Group by Milestone, filtre `-label:type:epic`.
   2. **Lot en cours** : Board filtré `milestone:<lot> -label:type:epic`, limite 2 sur « En cours ».
