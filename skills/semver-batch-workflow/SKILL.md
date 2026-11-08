@@ -45,6 +45,8 @@ Méthode de travail de William Derue (GitHub : WillIsback). Indépendante de l'o
   `!` pour breaking).
 - Le corps de PR référence chaque issue (`Closes #N`) et coche le bump déclaré
   (Patch / Minor / Major / Aucune release).
+- Pour une application livrée aux utilisateurs, **pas de merge sans réserves levées** sur
+  une alpha du lot (voir §4 bis).
 
 ## 4. Preflight
 
@@ -53,6 +55,34 @@ Méthode de travail de William Derue (GitHub : WillIsback). Indépendante de l'o
   tests sur matériel réel…).
 - Il rejoue alors localement ces jobs manquants sur la branche de lot avant d'ouvrir
   la PR vers `main`. Si la CI de PR couvre tout, pas de preflight.
+
+## 4 bis. Alpha du lot et réserves à lever (applications)
+
+Pour un projet qui livre une application (desktop, mobile…), les tests automatiques ne
+suffisent pas : certaines vérifications demandent le vrai matériel, le vrai OS ou un usage
+réel. Avant de fusionner la PR de lot sur `main` :
+
+1. **Construire une alpha du lot** une fois toutes les sous-branches intégrées, en variante
+   de diagnostic quand elle existe (ex. `devtools` : inspecteur, logs détaillés, barre de
+   mesures) : `gh workflow run build-devtools --ref <branche-de-lot> -f version=X.Y.Z-N`.
+   Suffixe de pré-version **numérique** (`0.6.2-1`, pas `0.6.2-alpha.1`) : l'installeur
+   MSI de Windows refuse les autres. Artefacts du run, rien n'est publié.
+2. **Rédiger dans le corps de la PR une section « Réserves à lever »** cochable :
+   - une case par vérification, avec la plateforme (🐧 Linux, 🪟 Windows, 🍎 macOS) et le
+     **signal attendu** (ligne de log, mesure de la barre de diagnostic, comportement
+     visible) ;
+   - chaque issue du lot qui ne se prouve pas par un test automatique ;
+   - les réserves encore ouvertes des versions précédentes, testables sur les machines
+     disponibles ;
+   - où trouver les traces (chemins des logs par OS) et comment récupérer l'alpha.
+3. **L'humain teste et coche** (ou dicte ses impressions à l'agent, qui coche et ouvre une
+   issue par problème trouvé). Une réserve non testable peut être **reportée
+   explicitement** (texte de la case + raison), jamais passée sous silence.
+4. Merge seulement quand toutes les cases sont cochées ou reportées. Un problème bloquant
+   repart en sous-branche du lot, puis nouvelle alpha (`X.Y.Z-N+1`).
+
+L'alpha et le preflight se font en parallèle : le preflight vérifie le code, l'alpha
+vérifie l'expérience réelle.
 
 ## 5. CI de PR sur main (gates bloquantes)
 
@@ -106,6 +136,9 @@ Mise en place automatisée : skill `semver-repo-setup` (scaffold + réglages Git
   `.mcp.json`, permissions des outils codegraph dans la config de l'agent.
 - **Aikido** : app GitHub connectée au dépôt, dossier `.aikido`, scans via MCP.
 - **CodeQL** : workflow `ci-codeql` (PR : langages modifiés ; lourd : hebdo/release).
+- **Alpha de diagnostic** (applications) : workflow `build-devtools` à la demande
+  (`workflow_dispatch`, version en entrée, artefacts courts), et section « Réserves à
+  lever » dans le template de PR (§4 bis).
 - **GitHub** : templates d'issue et de PR, Project, protection de `main` (PR obligatoire,
   gates requises), Dependabot groupé avec auto-merge si les gates sont vertes.
 - Docs : `CONTRIBUTING.md` (flux, gates, vérifications locales) et `AGENTS.md`
