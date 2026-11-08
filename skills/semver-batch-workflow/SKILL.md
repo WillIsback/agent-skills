@@ -84,7 +84,25 @@ réel. Avant de fusionner la PR de lot sur `main` :
 L'alpha et le preflight se font en parallèle : le preflight vérifie le code, l'alpha
 vérifie l'expérience réelle.
 
-## 5. CI de PR sur main (gates bloquantes)
+## 4 ter. Rétrospective et ménage avant chaque minor ou major
+
+Les lots patch ajoutent du code sans jamais en retirer. Avant d'ouvrir un lot **minor** ou
+**major**, on prévoit dans ce lot une tâche de ménage :
+
+1. **Mesurer** : lignes de code par catégorie (code, tests, générés exclus), comparées au
+   lot précédent et au point le plus bas connu ; zones qui ont le plus grossi ; fichiers
+   au-delà de la limite du projet (ex. 500 lignes).
+2. **Rétrospective et revue de code** de ces zones : code mort, doublons, abstractions
+   inutiles, restes d'un code d'origine (fork) jamais utilisés, tests redondants. Outils :
+   analyse de dépendances et d'exports inutilisés (`knip`, `cargo machete`, `cargo udeps`),
+   index de code (CodeGraph) pour les symboles sans appelant.
+3. **Réduire** : une user story par zone, dans le lot, avec un objectif chiffré de lignes
+   retirées et la règle « comportement inchangé » (les tests existants restent verts).
+4. **Valider** par l'alpha du lot (§4 bis), avec des tests **exhaustifs** quand le ménage
+   touche des parcours utilisateur.
+5. Noter le nouveau total dans la PR du lot, pour suivre la tendance d'une version à
+   l'autre.
+
 
 Catégories habituelles (adapter au langage) :
 
