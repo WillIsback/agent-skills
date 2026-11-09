@@ -158,7 +158,15 @@ Mise en place automatisée : skill `semver-repo-setup` (scaffold + réglages Git
   (`workflow_dispatch`, version en entrée, artefacts courts), et section « Réserves à
   lever » dans le template de PR (§4 bis).
 - **GitHub** : templates d'issue et de PR, Project, protection de `main` (PR obligatoire,
-  gates requises), Dependabot groupé avec auto-merge si les gates sont vertes.
+  gates requises), Dependabot groupé. Auto-merge réservé aux groupes minor/patch, une fois
+  **tous** les checks terminés et verts ; une PR isolée (majeure, ou 0.x → 0.y) se relit à
+  la main. Les familles qui doivent monter ensemble (SDK, `windows`/`windows-core`…) ont
+  leur propre groupe ; les dépendances épinglées ou non compilées en CI sont ignorées.
+- **Agents en parallèle sur une même machine** : `AGENTS.md` impose des tests ciblés
+  pendant le développement (`vitest related --run <fichiers>`, `cargo test -p <crate>`),
+  la suite complète une seule fois avant le commit final. Le dépôt plafonne les workers
+  de test (vitest `maxWorkers`), et le profil dev Rust se passe du cache incrémental
+  quand plusieurs worktrees partagent un `target/`. Le brief de chaque sous-agent le rappelle.
 - Docs : `CONTRIBUTING.md` (flux, gates, vérifications locales) et `AGENTS.md`
   qui pointe vers ce workflow.
 
