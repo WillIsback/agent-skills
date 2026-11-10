@@ -18,7 +18,7 @@ Le fichier de rôle prime sur ce skill en cas de conflit, l'humain prime sur les
 |---|---|---|
 | **Orchestrateur** | découpe le travail (issues, branches de lot, PR), délègue, relit, intègre, tient la PR et le tableau, relaie vers l'humain | compilations et tests lourds si une machine dédiée existe |
 | **Builder** | code et gates lourdes sur des sous-branches, builds de pré-version (alphas), mesures | fusion, modification de la PR, action sur la branche principale |
-| **Testeur** | passe les vérifications confiées sur les pré-versions, dans un environnement isolé, avec preuves | modification du code, de la PR ou de git |
+| **Testeur** | passe les vérifications confiées sur les pré-versions, dans un environnement isolé, avec preuves | modification du code du produit, de ses branches ou de la PR |
 
 Une session = un rôle. Ne pas prendre le travail d'un autre rôle « pour aller plus vite » :
 demander à l'orchestrateur.
@@ -54,7 +54,9 @@ Chaque artefact partagé a **un seul** rédacteur, pour éviter les éditions co
 - sous-branches de travail → la session qui les a créées, jusqu'à intégration ;
 - branche de lot et branche principale → orchestrateur (intégration), humain (fusion finale
   si le projet l'exige) ;
-- environnement de test → testeur.
+- environnement de test → testeur ;
+- fichier de rôle → l'orchestrateur, ou la session concernée si le projet le lui confie
+  (le fichier de rôle le dit explicitement).
 
 Les autres rôles **rapportent**, le rédacteur applique.
 
