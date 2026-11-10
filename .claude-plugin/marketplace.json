@@ -25,6 +25,15 @@
       "skills": [
         "./skills/semver-repo-setup"
       ]
+    },
+    {
+      "name": "agent-team",
+      "description": "Protocole d'une équipe de sessions d'agents (orchestrateur, builder, testeur) : messages, accusés, rédacteur unique, frontières de permission.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/agent-team"
+      ]
     }
   ]
 }
