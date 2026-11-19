@@ -67,6 +67,10 @@ réel. Avant de fusionner la PR de lot sur `main` :
    mesures) : `gh workflow run build-devtools --ref <branche-de-lot> -f version=X.Y.Z-N`.
    Suffixe de pré-version **numérique** (`0.6.2-1`, pas `0.6.2-alpha.1`) : l'installeur
    MSI de Windows refuse les autres. Artefacts du run, rien n'est publié.
+   Alphas **jamais signées** (signature réservée à la release : le workflow de build la
+   refuse dès qu'une feature est passée), construites **en local de préférence**
+   quand le projet fournit des scripts d'alpha (ex. `scripts/build-alpha.sh` sous Linux,
+   `scripts/build-alpha.ps1` sous Windows), le workflow `build-devtools` restant en secours.
 2. **Rédiger dans le corps de la PR une section « Réserves à lever »** cochable :
    - une case par vérification, avec la plateforme (🐧 Linux, 🪟 Windows, 🍎 macOS) et le
      **signal attendu** (ligne de log, mesure de la barre de diagnostic, comportement
@@ -103,6 +107,7 @@ Les lots patch ajoutent du code sans jamais en retirer. Avant d'ouvrir un lot **
 5. Noter le nouveau total dans la PR du lot, pour suivre la tendance d'une version à
    l'autre.
 
+## 5. CI de PR sur main (gates bloquantes)
 
 Catégories habituelles (adapter au langage) :
 
