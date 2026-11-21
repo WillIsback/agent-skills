@@ -34,6 +34,24 @@
       "skills": [
         "./skills/agent-team"
       ]
+    },
+    {
+      "name": "oc-project",
+      "description": "Orchestration d'un projet OpenClassrooms : cadrage depuis les PDF du projet, dépôt et kanban, session de specs (ADR, Mermaid), livraison lot par lot avec oral blanc obligatoire avant fusion, répétition de soutenance.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/oc-project"
+      ]
+    },
+    {
+      "name": "oc-oral-blanc",
+      "description": "Oral blanc de soutenance OpenClassrooms : l'agent joue l'évaluateur, questions ancrées dans le projet, mode apprentissage et porte de compréhension avant fusion.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/oc-oral-blanc"
+      ]
     }
   ]
 }
