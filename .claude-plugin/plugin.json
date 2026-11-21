@@ -1,0 +1,26 @@
+{
+  "name": "agent-skills",
+  "displayName": "Agent Skills (WillIsback)",
+  "version": "0.1.0",
+  "description": "Skills d'agent de WillIsback : workflow Git/GitHub par lots semver, mise en place de dépôt, protocole d'équipe d'agents (orchestrateur/builder/testeur) et swarm d'audit de sécurité piloté par un Chef SecOps avec rapport juridique.",
+  "author": {
+    "name": "William Derue",
+    "url": "https://github.com/WillIsback"
+  },
+  "homepage": "https://github.com/WillIsback/agent-skills",
+  "repository": "https://github.com/WillIsback/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "workflow",
+    "semver",
+    "github",
+    "ci-cd",
+    "agents",
+    "orchestration",
+    "secops",
+    "securite",
+    "pentest"
+  ],
+  "icon": "./.claude-plugin/icon.png"
+}
