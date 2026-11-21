@@ -5,53 +5,14 @@
     "url": "https://github.com/WillIsback"
   },
   "metadata": {
-    "description": "Skills d'agent de WillIsback, portables entre Claude Code, opencode et autres agents compatibles Agent Skills."
+    "description": "Skills d'agent de WillIsback, portables entre Claude Code, opencode et autres agents compatibles Agent Skills.",
+    "version": "0.1.0"
   },
   "plugins": [
     {
-      "name": "semver-batch-workflow",
-      "description": "Workflow Git/GitHub par lots de version semver : issues typées, branches de lot, PR unique vers main, gates CI optimisées, release automatique.",
+      "name": "willisback-skills",
       "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/semver-batch-workflow"
-      ]
-    },
-    {
-      "name": "semver-repo-setup",
-      "description": "Met en place un dépôt complet avec le workflow lots semver : outillage, CI/CD, GitHub, board kanban et backlog.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/semver-repo-setup"
-      ]
-    },
-    {
-      "name": "agent-team",
-      "description": "Protocole d'une équipe de sessions d'agents (orchestrateur, builder, testeur) : messages, accusés, rédacteur unique, frontières de permission.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/agent-team"
-      ]
-    },
-    {
-      "name": "oc-project",
-      "description": "Orchestration d'un projet OpenClassrooms : cadrage depuis les PDF du projet, dépôt et kanban, session de specs (ADR, Mermaid), livraison lot par lot avec oral blanc obligatoire avant fusion, répétition de soutenance.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/oc-project"
-      ]
-    },
-    {
-      "name": "oc-oral-blanc",
-      "description": "Oral blanc de soutenance OpenClassrooms : l'agent joue l'évaluateur, questions ancrées dans le projet, mode apprentissage et porte de compréhension avant fusion.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/oc-oral-blanc"
-      ]
+      "description": "Skills d'agent de WillIsback : workflow par lots semver, mise en place de dépôt, équipe d'agents (orchestrateur/builder/testeur), swarm d'audit de sécurité SecOps avec rapport juridique, orchestration de projets OpenClassrooms et oral blanc de soutenance. Les six skills sont embarqués dans skills/."
     }
   ]
 }

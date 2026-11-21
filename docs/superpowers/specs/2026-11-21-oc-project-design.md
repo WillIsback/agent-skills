@@ -135,7 +135,7 @@ skills/
       exercices.md                   # types d'exercices pratiques par domaine
 ```
 
-Plus : une entrée par skill dans `.claude-plugin/marketplace.json` et une ligne par skill
+Plus : les deux skills rejoignent le plugin unique `willisback-skills` (`.claude-plugin/marketplace.json` et `plugin.json`, depuis #17), et une ligne par skill
 dans le `README.md` du dépôt.
 
 ## 7. Partie 1 — du brief à la documentation technique
@@ -345,6 +345,6 @@ session de specs.
 - L'implémentation des hooks (bash + `jq`), et leurs tests sur quelques prompts et commandes
   représentatifs (faux positifs « OCR », « doc », « Oc » ; vrais positifs « OC P8 », « projet
   OpenClassrooms »).
-- La forme de l'entrée marketplace (un plugin par skill, comme l'existant).
+- La description du plugin unique `willisback-skills` (les skills y sont embarqués via `skills/`).
 - Le contenu de `catalogue-parcours.md` à partir des données du §4 ; titres AIE manquants
   marqués « à compléter ».
