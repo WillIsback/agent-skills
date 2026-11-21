@@ -8,6 +8,7 @@ utilisables avec Claude Code, opencode et tout agent compatible.
 | [`semver-batch-workflow`](skills/semver-batch-workflow/SKILL.md) | Workflow Git/GitHub par lots de version semver : epics et issues typées (sous-issues), board kanban GitHub Projects, ordre patch → minor → major, branche de lot et sous-branches par issue, PR unique vers `main`, preflight conditionnel, gates CI optimisées en temps, release automatique avec bump. |
 | [`semver-repo-setup`](skills/semver-repo-setup/SKILL.md) | Mise en place de bout en bout d'un dépôt avec ce workflow : génération de l'outillage (profil `python-uv`, option Docker), dépôt et réglages GitHub, protection de `main`, Project kanban, backlog epics → user stories en lots datés. |
 | [`agent-team`](skills/agent-team/SKILL.md) | Équipe de sessions d'agents sur un même projet (orchestrateur, builder, testeur) : rôles, format des messages et accusés de réception, rédacteur unique, frontières de permission, escalade vers l'humain, délégation des vérifications (🤖/👤). Le projet fournit un fichier de rôle par session. |
+| [`secops-swarm`](skills/secops-swarm/SKILL.md) | Audit de sécurité offensif d'une application **autorisée**, mené par un swarm d'agents piloté par un Chef SecOps : porte d'autorisation, reconnaissance puis attaque répartie par axes (OWASP : authn/authz, injection, secrets, config, dépendances, logique métier), consolidation et compte rendu à l'humain, puis transmission des findings à un agent Juriste qui rédige le rapport circonstancié. S'appuie sur `agent-team`. |
 
 ## Démarrer un nouveau projet
 
@@ -34,6 +35,7 @@ npx skills add WillIsback/agent-skills
 /plugin install semver-batch-workflow@willisback-skills
 /plugin install semver-repo-setup@willisback-skills
 /plugin install agent-team@willisback-skills
+/plugin install secops-swarm@willisback-skills
 ```
 
 ### Manuel
