@@ -48,10 +48,10 @@ En deux étapes (Claude Code < 2.1.275) :
 
 ### Claude plugin directory
 
-Le dossier [`directory/`](directory/) est un plugin à part, limité aux **4 skills 100 %
-Markdown** (`semver-batch-workflow`, `agent-team`, `secops-swarm`, `oc-oral-blanc`), publiable
-au [Claude plugin directory](https://claude.ai/directory) sans statut d'organisation vérifiée.
-Les skills qui embarquent des scripts ou gabarits (`semver-repo-setup`, `oc-project`) ne sont
+Le dossier [`directory/`](directory/) est un plugin à part, limité aux **3 skills autonomes
+100 % Markdown** (`semver-batch-workflow`, `agent-team`, `secops-swarm`), publiable au
+[Claude plugin directory](https://claude.ai/directory) sans statut d'organisation vérifiée.
+`semver-repo-setup` (scripts/gabarits) et la paire `oc-project` + `oc-oral-blanc` ne sont
 acceptés que d'une organisation **Vérifiée** ; ils rejoindront le listing après vérification.
 
 Pour soumettre : `claude.ai/directory/manage` → **Submit new** → **Plugin bundle** → dépôt
