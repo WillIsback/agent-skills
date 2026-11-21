@@ -34,6 +34,15 @@
       "skills": [
         "./skills/agent-team"
       ]
+    },
+    {
+      "name": "secops-swarm",
+      "description": "Audit de sécurité offensif d'une application autorisée par un swarm d'agents piloté par un Chef SecOps : autorisation, axes d'attaque OWASP, consolidation, compte rendu, puis rapport circonstancié rédigé par un agent Juriste.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/secops-swarm"
+      ]
     }
   ]
 }
