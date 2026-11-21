@@ -5,44 +5,14 @@
     "url": "https://github.com/WillIsback"
   },
   "metadata": {
-    "description": "Skills d'agent de WillIsback, portables entre Claude Code, opencode et autres agents compatibles Agent Skills."
+    "description": "Skills d'agent de WillIsback, portables entre Claude Code, opencode et autres agents compatibles Agent Skills.",
+    "version": "0.1.0"
   },
   "plugins": [
     {
-      "name": "semver-batch-workflow",
-      "description": "Workflow Git/GitHub par lots de version semver : issues typées, branches de lot, PR unique vers main, gates CI optimisées, release automatique.",
+      "name": "agent-skills",
       "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/semver-batch-workflow"
-      ]
-    },
-    {
-      "name": "semver-repo-setup",
-      "description": "Met en place un dépôt complet avec le workflow lots semver : outillage, CI/CD, GitHub, board kanban et backlog.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/semver-repo-setup"
-      ]
-    },
-    {
-      "name": "agent-team",
-      "description": "Protocole d'une équipe de sessions d'agents (orchestrateur, builder, testeur) : messages, accusés, rédacteur unique, frontières de permission.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/agent-team"
-      ]
-    },
-    {
-      "name": "secops-swarm",
-      "description": "Audit de sécurité offensif d'une application autorisée par un swarm d'agents piloté par un Chef SecOps : autorisation, axes d'attaque OWASP, consolidation, compte rendu, puis rapport circonstancié rédigé par un agent Juriste.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/secops-swarm"
-      ]
+      "description": "Skills d'agent de WillIsback : workflow par lots semver, mise en place de dépôt, équipe d'agents (orchestrateur/builder/testeur) et swarm d'audit de sécurité SecOps avec rapport juridique. Les quatre skills sont embarqués dans skills/."
     }
   ]
 }
