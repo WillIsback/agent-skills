@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Faux gh pour les tests : journalise ses arguments, renvoie $GH_STUB_JSON
+# ou échoue avec $GH_STUB_EXIT.
+[ -n "${GH_STUB_LOG:-}" ] && printf '%s\n' "$*" >> "$GH_STUB_LOG"
+if [ -n "${GH_STUB_EXIT:-}" ] && [ "$GH_STUB_EXIT" != "0" ]; then
+  echo "gh: erreur simulée" >&2
+  exit "$GH_STUB_EXIT"
+fi
+printf '%s\n' "${GH_STUB_JSON:-{\}}"
