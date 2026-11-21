@@ -6,6 +6,7 @@ cat > "$S" <<'JSON'
 {"env":{"A":"1"},"permissions":{"allow":["Bash(ls)"]},
  "hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"codegraph prompt-hook"}]}]}}
 JSON
+chmod 664 "$S"
 orig_env="$(jq -S '.env, .permissions' "$S")"
 
 bash "$SCRIPT" --settings "$S" >/dev/null 2>&1
@@ -18,6 +19,7 @@ assert_eq Bash "$(jq -r '.hooks.PreToolUse[0].matcher' "$S")" "matcher Bash"
 assert_contains "/hooks/oc-merge-gate.sh" "$(jq -r '.hooks.PreToolUse[0].hooks[0].command' "$S")" "oc-merge-gate ajouté"
 assert_eq "$orig_env" "$(jq -S '.env, .permissions' "$S")" "env et permissions intacts"
 [ -f "$S.bak-oc" ] && _ok || _ko "sauvegarde .bak-oc"
+assert_eq 664 "$(stat -c %a "$S")" "permissions conservées"
 cmd="$(jq -r '.hooks.PreToolUse[0].hooks[0].command' "$S")"
 [ -x "$cmd" ] && _ok || _ko "chemin de hook absolu et exécutable" "$cmd"
 

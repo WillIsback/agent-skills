@@ -47,6 +47,7 @@ fi
 cp "$settings" "$settings.bak-oc"
 tmp="$(mktemp "$(dirname "$settings")/.settings.XXXXXX")"
 jq --arg t "$trigger" --arg g "$gate" "$filtre" "$settings" > "$tmp"
+chmod --reference="$settings" "$tmp" 2>/dev/null || true
 mv "$tmp" "$settings"
 printf 'Ajouté dans %s :\n' "$settings"
 printf '  - %s\n' "${ajouts[@]}"
