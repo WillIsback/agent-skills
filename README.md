@@ -30,18 +30,18 @@ npx skills add WillIsback/agent-skills
 
 ### Claude Code (marketplace de plugins)
 
-Les quatre skills sont regroupés dans un plugin unique `agent-skills` : une seule
+Les quatre skills sont regroupés dans un plugin unique `willisback-skills` : une seule
 installation les embarque tous (ils restent chargés à la demande, selon leur description).
 
 ```text
-/plugin install agent-skills --marketplace WillIsback/agent-skills
+/plugin install willisback-skills --marketplace WillIsback/agent-skills
 ```
 
 En deux étapes (Claude Code < 2.1.275) :
 
 ```text
 /plugin marketplace add WillIsback/agent-skills
-/plugin install agent-skills@willisback-skills
+/plugin install willisback-skills@willisback-skills
 ```
 
 ### Manuel
