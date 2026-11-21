@@ -46,6 +46,18 @@ En deux étapes (Claude Code < 2.1.275) :
 /plugin install willisback-skills@willisback-skills
 ```
 
+### Claude plugin directory
+
+Le dossier [`directory/`](directory/) est un plugin à part, limité aux **4 skills 100 %
+Markdown** (`semver-batch-workflow`, `agent-team`, `secops-swarm`, `oc-oral-blanc`), publiable
+au [Claude plugin directory](https://claude.ai/directory) sans statut d'organisation vérifiée.
+Les skills qui embarquent des scripts ou gabarits (`semver-repo-setup`, `oc-project`) ne sont
+acceptés que d'une organisation **Vérifiée** ; ils rejoindront le listing après vérification.
+
+Pour soumettre : `claude.ai/directory/manage` → **Submit new** → **Plugin bundle** → dépôt
+`WillIsback/agent-skills`, *Plugin path* = `directory`. Le test `tests/test_directory_sync.sh`
+garantit que les `SKILL.md` de `directory/` restent des copies conformes de ceux de `skills/`.
+
 ### Manuel
 
 Copier `skills/<nom>/` dans `~/.agents/skills/` (opencode, agents génériques)
