@@ -17,9 +17,16 @@ for skill_md in "$REPO_ROOT"/skills/*/SKILL.md; do
   len="$(printf '%s' "$desc" | wc -m)"
   [ "$len" -le 1024 ] && _ok || _ko "$nom : description trop longue ($len > 1024)"
   # Chemins references/… et assets/… cités dans le skill : ils doivent exister.
-  while IFS= read -r chemin; do
-    [ -e "$dir/$chemin" ] && _ok || _ko "$nom : $chemin cité mais absent"
-  done < <(grep -rhoE '(references|assets)/[A-Za-z0-9_.-]+\.(md|sh|json)' "$dir" | sort -u)
+  # Un préfixe « <autre-skill>/ » désigne un fichier d'un autre skill du dépôt.
+  while IFS= read -r ref; do
+    prefixe="${ref%%/*}"
+    if [ -d "$REPO_ROOT/skills/$prefixe" ] && [[ "$ref" == "$prefixe"/references/* || "$ref" == "$prefixe"/assets/* ]]; then
+      cible="$REPO_ROOT/skills/$ref"
+    else
+      cible="$dir/${ref#*/}"; [[ "$ref" == references/* || "$ref" == assets/* ]] && cible="$dir/$ref"
+    fi
+    [ -e "$cible" ] && _ok || _ko "$nom : $ref cité mais absent"
+  done < <(grep -rhoE '([a-z0-9-]+/)?(references|assets)/[A-Za-z0-9_.-]+\.(md|sh|json)' "$dir" | sort -u)
   if grep -rqE '\b(TODO|TBD)\b' "$dir"; then _ko "$nom : contient TODO ou TBD"; else _ok; fi
 done
 
