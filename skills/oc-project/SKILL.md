@@ -45,7 +45,8 @@ parcours : `references/catalogue-parcours.md`.
 - **Jamais de `gh pr merge` sur une PR de lot ou de specs sans ligne `oc-gate` valide
   pour le SHA de tête** dans `.oc/carnet.md` (skill `oc-oral-blanc`). Le hook
   `oc-merge-gate.sh` l'impose sous Claude Code ; sans hook, la règle vaut quand même.
-  La fusion se fait seulement à la demande de William.
+  La fusion se fait seulement à la demande de William. Un refus de la porte ne se
+  contourne jamais (`gh api`, `--auto`, autre forme) : il se lève par un oral validé.
 - Mettre à jour `.oc/state.md` (phase, lot, journal) à chaque transition.
 - Ne jamais versionner `.oc/` ni `exercices/`, ni publier le contenu des PDF OC.
 

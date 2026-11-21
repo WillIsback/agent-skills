@@ -27,7 +27,9 @@ fusionner un lot que William ne sait pas défendre.
 **Ne jamais lancer `gh pr merge` sur une PR de lot sans une ligne
 `oc-gate: v<X.Y.Z> validé <date> sha:<7 car.>` dans `.oc/carnet.md` dont le SHA est
 celui de la tête actuelle de la PR** (`gh pr view <n> --json headRefOid`). Si un commit a
-été poussé après l'oral, refaire un oral court sur ce qui a changé. Le hook
+été poussé après l'oral, faire l'oral « delta » d'`oc-oral-blanc` (au moins une question
+sur ce qui a changé) avant toute nouvelle ligne `oc-gate`. Jamais de `--auto`, jamais de
+fusion par `gh api`, et un refus de la porte ne se contourne jamais. Le hook
 `oc-merge-gate.sh` l'impose sous Claude Code ; ailleurs, la règle reste la même.
 
 ## Après la fusion

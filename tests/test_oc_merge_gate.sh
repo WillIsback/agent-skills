@@ -67,4 +67,59 @@ assert_contains "pr view 81 -R o/r" "$(cat "$GH_STUB_LOG")" "numero_et_repo_tran
 gate "$d" "cd x && gh pr merge --repo o/r" >/dev/null
 assert_contains "pr view -R o/r" "$(cat "$GH_STUB_LOG")" "repo_long_sans_numero"
 
+# --- Correctifs de la revue finale ---
+reset(){ unset GH_STUB_EXIT GH_STUB_JSON_ARG; export GH_STUB_LOG; GH_STUB_LOG="$(mktemp)"; }
+lot_non_valide='{"headRefName":"feat/0.4.0","headRefOid":"4444444aaaa","baseRefName":"main"}'
+
+# C1 : cwd dans un sous-dossier du projet
+reset; d=$(projet 1); mkdir -p "$d/apps/api"; pr feat/0.3.0 $SHA_OK
+assert_eq deny "$(decision "$(gate "$d/apps/api" "gh pr merge 12")")" "sous_dossier : porte appliquée"
+# C1 : « cd <projet> && gh pr merge » depuis ailleurs
+reset; d=$(projet 1); pr feat/0.3.0 $SHA_OK
+assert_eq deny "$(decision "$(gate /tmp "cd $d && gh pr merge 12")")" "cd_prefixe : porte appliquée"
+# C1 : worktree git (sans .oc/) du projet principal
+reset; d=$(projet 1); ( cd "$d" && git init -q -b main && printf '.oc/\n' > .gitignore && git add .gitignore && git -c user.email=t@t -c user.name=t commit -qm init && git worktree add -q "$d-wt" -b feat/0.3.0 ) >/dev/null 2>&1
+pr feat/0.3.0 $SHA_OK
+assert_eq deny "$(decision "$(gate "$d-wt" "gh pr merge 12")")" "worktree : porte appliquée"
+
+# C2 : la PR fusionnée est celle désignée, même après des options
+reset; d=$(projet 1 '<!-- oc-gate: v0.3.0 validé 2026-12-18 sha:3f2a9c1 -->'); pr chore/outillage $SHA_OK
+export GH_STUB_JSON_ARG="$lot_non_valide"
+assert_eq deny "$(decision "$(gate "$d" "gh pr merge --squash 14")")" "options_avant_numero"
+assert_contains "pr view 14" "$(cat "$GH_STUB_LOG")" "options_avant_numero : PR 14 lue"
+assert_eq deny "$(decision "$(gate "$d" "gh pr merge -s -d -t 'titre long' 14")")" "option_avec_valeur"
+assert_eq deny "$(decision "$(gate "$d" "gh pr merge https://github.com/o/r/pull/14 --squash")")" "url"
+assert_contains "pr view 14" "$(tail -n1 "$GH_STUB_LOG")" "url : numéro extrait"
+assert_eq deny "$(decision "$(gate "$d" "gh pr merge feat/0.4.0")")" "nom_de_branche"
+assert_contains "pr view feat/0.4.0" "$(tail -n1 "$GH_STUB_LOG")" "nom_de_branche : transmis"
+out=$(gate "$d" "gh pr merge 3 && gh pr merge 12")
+assert_eq deny "$(decision "$out")" "deux_merges : refus"
+assert_contains "une seule" "$(raison "$out")" "deux_merges : raison"
+
+# I3 : autres formes
+reset; d=$(projet 1); pr feat/0.3.0 $SHA_OK
+assert_eq deny "$(decision "$(gate "$d" "gh  pr   merge 12")")" "espaces_multiples"
+assert_eq deny "$(decision "$(gate "$d" "gh api -X PUT repos/o/r/pulls/12/merge")")" "gh_api_merge"
+assert_eq deny "$(decision "$(gate "$d" "gh api graphql -f query='mutation { mergePullRequest(input:{}) { clientMutationId } }'")")" "gh_api_graphql"
+assert_empty "$(gate "$d" "gh api repos/o/r/pulls/12")" "gh_api_lecture_autorisee"
+
+# I4 : --auto refusé même porte validée
+reset; d=$(projet 1 '<!-- oc-gate: v0.3.0 validé 2026-12-18 sha:3f2a9c1 -->'); pr feat/0.3.0 $SHA_OK
+out=$(gate "$d" "gh pr merge 12 --auto --squash")
+assert_eq deny "$(decision "$out")" "auto_refuse"
+assert_contains "--auto" "$(raison "$out")" "auto_refuse : raison"
+
+# I5 : tout lot <type>/X.Y.Z vers main est soumis à la porte
+reset; d=$(projet 1); pr docs/0.5.0 $SHA_OK
+assert_eq deny "$(decision "$(gate "$d" "gh pr merge 20")")" "lot_docs_soumis"
+pr chore/0.5.1 $SHA_OK
+assert_eq deny "$(decision "$(gate "$d" "gh pr merge 21")")" "lot_chore_soumis"
+
+# Regrade : JSON de gh sans headRefName → refus (pas d'exemption silencieuse)
+reset; d=$(projet 1); export GH_STUB_JSON='{"message":"Not Found"}'
+assert_eq deny "$(decision "$(gate "$d" "gh pr merge 12")")" "json_incomplet_refuse"
+# Regrade : erreur de gh reprise dans la raison
+reset; d=$(projet 1); export GH_STUB_EXIT=1
+assert_contains "erreur simulée" "$(raison "$(gate "$d" "gh pr merge 12")")" "erreur_gh_dans_raison"
+
 finish

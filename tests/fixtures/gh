@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# Faux gh pour les tests : journalise ses arguments, renvoie $GH_STUB_JSON
-# ou échoue avec $GH_STUB_EXIT.
+# Faux gh pour les tests : journalise ses arguments ; pour « pr view <cible> »
+# renvoie $GH_STUB_JSON_ARG (si défini), sinon $GH_STUB_JSON ; échoue avec $GH_STUB_EXIT.
 [ -n "${GH_STUB_LOG:-}" ] && printf '%s\n' "$*" >> "$GH_STUB_LOG"
 if [ -n "${GH_STUB_EXIT:-}" ] && [ "$GH_STUB_EXIT" != "0" ]; then
   echo "gh: erreur simulée" >&2
   exit "$GH_STUB_EXIT"
 fi
-printf '%s\n' "${GH_STUB_JSON:-{\}}"
+if [ "${1:-}" = pr ] && [ "${2:-}" = view ] && [ -n "${3:-}" ] && [ "${3#-}" = "$3" ] && [ -n "${GH_STUB_JSON_ARG:-}" ]; then
+  printf '%s\n' "$GH_STUB_JSON_ARG"
+else
+  printf '%s\n' "${GH_STUB_JSON:-{\}}"
+fi

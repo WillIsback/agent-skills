@@ -14,12 +14,23 @@ exactement ça, et rien n'est fusionné tant que ce n'est pas acquis.
 **Porte de PR** (appelé par `oc-project`, ou « oral blanc sur la PR #n ») :
 - Entrées : `.oc/state.md` (`evaluateur:`, `lot:`), `docs/brief.md` (axes de discussion,
   démos), matrice d'objectifs, `docs/spec.md` (ADR), diff de la PR (`gh pr diff <n>`).
-- Identifiant de porte : `v<X.Y.Z>` (branche `feat|fix|perf|major/X.Y.Z`) ou `specs`
+- Identifiant de porte : `v<X.Y.Z>` (branche de lot `<type>/X.Y.Z` vers `main`) ou `specs`
   (branche `docs/X.Y.Z-specs`).
 - Périmètre des questions : ce que la PR change, et les indicateurs de la fiche qu'elle
   couvre.
 
+**Delta** (la porte d'une PR a été validée, puis un commit a été poussé) :
+- Périmètre : uniquement `git diff <SHA validé>..<SHA de tête>`.
+- Au moins **une question** sur ce delta (plus si le changement touche une décision ou un
+  indicateur de la fiche), mêmes règles d'évaluation et de mode apprentissage.
+- Puis nouvelle entrée courte dans le carnet et nouvelle ligne `oc-gate` avec le nouveau
+  SHA. **Mettre à jour une ligne `oc-gate` sans avoir posé de question est interdit.**
+
 **Autonome** (révision d'un projet, éventuellement ancien et sans `.oc/`) :
+- **Avant d'écrire quoi que ce soit dans `.oc/` ou `exercices/`** : vérifier que le
+  `.gitignore` du projet contient `.oc/` et `exercices/`, les ajouter sinon, et le contrôler
+  avec `git check-ignore .oc/x exercices/x`. Un ancien dépôt public ne doit jamais recevoir
+  les PDF OC ni le carnet.
 - Demander la fiche d'auto-évaluation et la page soutenance (PDF), les ranger dans
   `.oc/sources/` et en tirer rôle, indicateurs et axes.
 - Sans PDF : **mode dégradé**, à partir du README, du code et des docs — le dire
@@ -75,3 +86,6 @@ exactement ça, et rien n'est fusionné tant que ce n'est pas acquis.
 - Donner la réponse avant que William ait essayé.
 - Écrire la ligne `oc-gate` avant la fin, avec une question non maîtrisée, ou avec un SHA
   qui n'est pas celui de la tête actuelle de la PR.
+- Mettre à jour le SHA d'une ligne `oc-gate` existante sans oral sur le delta.
+- Contourner un refus de la porte (`gh api`, `--auto`, autre forme de commande) : un refus
+  se lève uniquement par un oral validé.

@@ -62,6 +62,12 @@ Scientist »).
 
 ## 5. Dépôt et kanban
 
+**Avant tout `git init` ou commit**, écrire dans le `.gitignore` du dossier les lignes
+`.oc/` et `exercices/`, puis vérifier avec `git check-ignore .oc/x exercices/x` une fois le
+dépôt initialisé : le dossier contient déjà les PDF OC et la note de passation, et le
+commit d'amorçage de `semver-repo-setup` ne doit jamais les embarquer. Préciser à
+`semver-repo-setup` que ce `.gitignore` existe et doit être conservé.
+
 Invoquer le skill `semver-repo-setup` en lui donnant ce brief :
 
 - nom `OC-{AIE|DIA}-P{n}-{Nom}` (`conventions.md`), public, description en une phrase ;
@@ -73,7 +79,8 @@ Invoquer le skill `semver-repo-setup` en lui donnant ce brief :
 
 Ajouts propres à OC, dans la branche d'outillage :
 
-- `.gitignore` : `.oc/` et `exercices/` ;
+- vérifier que `.oc/` et `exercices/` sont toujours dans le `.gitignore` final (le profil de
+  stack peut l'avoir réécrit) ;
 - initialiser `.oc/carnet.md` depuis `assets/carnet.md` (local, non versionné).
 
 ## Fin de phase

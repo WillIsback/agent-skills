@@ -290,7 +290,12 @@ Il sert aussi de base au plan de soutenance.
   que le dossier courant est un projet OC (présence de `.oc/state.md`), il identifie la PR
   (numéro dans la commande, sinon la PR de la branche courante) et lit sa branche de tête et
   son SHA (`gh pr view --json headRefName,headRefOid`).
-  - **PR soumises à la porte** : branches de lot `feat|fix|perf|major/<X.Y.Z>` (identifiant
+  - *Révisé après la revue finale* : tout lot `<type>/<X.Y.Z>` vers `main` est soumis à la
+    porte (un lot `docs:` ou `refactor:` porte aussi du travail à défendre) ; le hook
+    remonte jusqu'à la racine du projet (sous-dossier, worktree), identifie la PR même
+    après des options, par URL ou par branche, et refuse `gh api` (fusion), `--auto` et
+    plusieurs fusions par commande. *[décision de l'agent]*
+  - **PR soumises à la porte** (version initiale) : branches de lot `feat|fix|perf|major/<X.Y.Z>` (identifiant
     de porte = `v<X.Y.Z>`) et branche de specs `docs/<X.Y.Z>-specs` (identifiant =
     `specs`). *[décision de l'agent]*
   - **PR exemptées** : `chore/outillage` (fusionnée par `semver-repo-setup` pendant le

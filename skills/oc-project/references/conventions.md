@@ -50,9 +50,12 @@ en expliquant pourquoi. Le contenu OC n'est jamais recopié tel quel dans le dé
 <!-- oc-gate: <id> validé <AAAA-MM-JJ> sha:<7 premiers caractères du SHA de tête> -->
 ```
 
-`<id>` = `v<X.Y.Z>` pour une PR de lot (`feat|fix|perf|major/X.Y.Z` vers `main`), `specs`
+`<id>` = `v<X.Y.Z>` pour une PR de lot (`<type>/X.Y.Z` vers `main`, quel que soit le type), `specs`
 pour la PR de specs (`docs/X.Y.Z-specs`). La dernière ligne d'un `<id>` fait foi ; un
-commit poussé après la validation l'invalide.
+commit poussé après la validation l'invalide (oral « delta » d'`oc-oral-blanc`).
+Exemptées : `chore/outillage`, `dependabot/*` et toute branche qui n'est pas un lot.
+Toujours refusés dans un projet OC : la fusion par `gh api`, `gh pr merge --auto`, plusieurs
+fusions dans une même commande. Un refus de la porte ne se contourne jamais.
 
 ## Qualité et sécurité
 

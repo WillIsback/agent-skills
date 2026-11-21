@@ -14,4 +14,6 @@
 **Notes pour la fiche** :
 - <indicateur> : <ce que William sait défendre, en une ligne>
 
-<!-- oc-gate: <id> validé <AAAA-MM-JJ> sha:<7 caractères> -->
+<!-- Ligne de porte : à ajouter UNIQUEMENT si toutes les questions sont « maîtrisé »
+     (voir oc-oral-blanc), au format exact
+     « oc-gate: <id> validé <AAAA-MM-JJ> sha:<7 caractères> » entre balises de commentaire. -->
