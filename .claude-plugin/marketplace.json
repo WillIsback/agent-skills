@@ -12,7 +12,7 @@
     {
       "name": "willisback-skills",
       "source": "./",
-      "description": "Skills d'agent de WillIsback : workflow par lots semver, mise en place de dépôt, équipe d'agents (orchestrateur/builder/testeur), swarm d'audit de sécurité SecOps avec rapport juridique, orchestration de projets OpenClassrooms et oral blanc de soutenance. Les six skills sont embarqués dans skills/."
+      "description": "Skills d'agent de WillIsback : workflow par lots semver, mise en place de dépôt, équipe d'agents (orchestrateur/builder/testeur), swarm d'audit de sécurité SecOps avec rapport juridique, orchestration de projets OpenClassrooms et oral blanc de soutenance, cadrage d'une bêta de test centrée sur la promesse de valeur. Les sept skills sont embarqués dans skills/."
     }
   ]
 }

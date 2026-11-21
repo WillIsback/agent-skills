@@ -11,6 +11,7 @@ utilisables avec Claude Code, opencode et tout agent compatible.
 | [`secops-swarm`](skills/secops-swarm/SKILL.md) | Audit de sécurité offensif d'une application **autorisée**, mené par un swarm d'agents piloté par un Chef SecOps : porte d'autorisation, reconnaissance puis attaque répartie par axes (OWASP : authn/authz, injection, secrets, config, dépendances, logique métier), consolidation et compte rendu à l'humain, puis transmission des findings à un agent Juriste qui rédige le rapport circonstancié. S'appuie sur `agent-team`. |
 | [`oc-project`](skills/oc-project/SKILL.md) | Orchestration d'un projet OpenClassrooms (parcours AIE ou DIA) : cadrage depuis les PDF du projet (mission, livrables et soutenance, fiche d'auto-évaluation), matrice d'objectifs et répartition 👤/🤖, dépôt et kanban via `semver-repo-setup`, session de specs (ADR, schémas Mermaid), livraison lot par lot via `semver-batch-workflow` avec oral blanc obligatoire avant chaque fusion, répétition générale de la soutenance. |
 | [`oc-oral-blanc`](skills/oc-oral-blanc/SKILL.md) | Oral blanc de soutenance : l'agent joue l'évaluateur, pose des questions ancrées dans le code et les décisions du projet, évalue sans complaisance, bascule en mode apprentissage (explications, exercices) et valide la porte de fusion (`oc-gate`) seulement quand tout est maîtrisé. |
+| [`beta-metrics`](skills/beta-metrics/SKILL.md) | Cadrage d'une bêta de test centrée sur la promesse de valeur : reformuler la promesse en une phrase falsifiable, séparer l'éprouvé du jamais vérifié, trouver LA métrique (comportement observable mesuré avant l'intervention, rapporté à un volume) en écartant les fausses métriques, mesure avant/après avec groupe de comparaison au même seuil, export anonyme sans aucun contenu (vie privée par conception, test de garde) et outil d'agrégation, page de transparence pour décideur et testeur, engagement à publier un résultat décevant. S'appuie sur `semver-batch-workflow` et `agent-team`. |
 
 ## Démarrer un nouveau projet
 
@@ -32,7 +33,7 @@ npx skills add WillIsback/agent-skills
 
 ### Claude Code (marketplace de plugins)
 
-Les six skills sont regroupés dans un plugin unique `willisback-skills` : une seule
+Les sept skills sont regroupés dans un plugin unique `willisback-skills` : une seule
 installation les embarque tous (ils restent chargés à la demande, selon leur description).
 
 ```text
