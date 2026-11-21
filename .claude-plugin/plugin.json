@@ -1,6 +1,6 @@
 {
-  "name": "agent-skills",
-  "displayName": "Agent Skills (WillIsback)",
+  "name": "willisback-skills",
+  "displayName": "WillIsback Skills",
   "version": "0.1.0",
   "description": "Skills d'agent de WillIsback : workflow Git/GitHub par lots semver, mise en place de dépôt, protocole d'équipe d'agents (orchestrateur/builder/testeur) et swarm d'audit de sécurité piloté par un Chef SecOps avec rapport juridique.",
   "author": {

@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "agent-skills",
+      "name": "willisback-skills",
       "source": "./",
       "description": "Skills d'agent de WillIsback : workflow par lots semver, mise en place de dépôt, équipe d'agents (orchestrateur/builder/testeur) et swarm d'audit de sécurité SecOps avec rapport juridique. Les quatre skills sont embarqués dans skills/."
     }
