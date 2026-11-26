@@ -108,6 +108,11 @@ Les lots patch ajoutent du code sans jamais en retirer. Avant d'ouvrir un lot **
    touche des parcours utilisateur.
 5. Noter le nouveau total dans la PR du lot, pour suivre la tendance d'une version à
    l'autre.
+6. **Publier la carte du code** quand le dépôt a un index CodeGraph : régénérer, en dernier
+   dans la PR du lot et sur un arbre propre, la carte interactive de la codebase (zones,
+   lignes, liens entre zones) que la documentation affiche, avec le numéro de la version à
+   venir. Le générateur est déterministe (même index = même fichier) et vérifiable
+   (`--check`), pour que la carte de chaque minor ou major reste comparable à la précédente.
 
 ## 5. CI de PR sur main (gates bloquantes)
 
