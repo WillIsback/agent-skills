@@ -96,8 +96,10 @@ Les lots patch ajoutent du code sans jamais en retirer. Avant d'ouvrir un lot **
 1. **Mesurer** : lignes de code par catégorie (code, tests, générés exclus), comparées au
    lot précédent et au point le plus bas connu ; zones qui ont le plus grossi ; fichiers
    au-delà de la limite du projet (ex. 500 lignes).
-2. **Rétrospective et revue de code** de ces zones : code mort, doublons, abstractions
-   inutiles, restes d'un code d'origine (fork) jamais utilisés, tests redondants. Outils :
+2. **Rétrospective et revue de code** de ces zones, en s'appuyant aussi sur les journaux
+   et les décisions des pages de suivi des releases du cycle (§6 bis) : code mort, doublons,
+   abstractions inutiles, restes d'un code d'origine (fork) jamais utilisés, tests
+   redondants. Outils :
    analyse de dépendances et d'exports inutilisés (`knip`, `cargo machete`, `cargo udeps`),
    index de code (CodeGraph) pour les symboles sans appelant.
 3. **Réduire** : une user story par zone, dans le lot, avec un objectif chiffré de lignes
@@ -131,6 +133,38 @@ Toutes vertes → merge → release.
 - Gate de cohérence de version (le tag n'existe pas et il est supérieur au dernier),
   puis tag, GitHub Release et artefacts (paquets, image Docker…).
 - Concurrence sérialisée (`cancel-in-progress: false`).
+
+## 6 bis. Page de suivi après chaque release (applications)
+
+Les réserves de l'alpha (§4 bis) ne couvrent pas tout : la mise à jour réelle depuis la
+version précédente, l'usage sur plusieurs jours, les décisions laissées en suspens. Après
+chaque release d'une application livrée aux utilisateurs, l'agent ouvre une **page de suivi
+interactive** pour la période qui suit (jusqu'au lot suivant ou à la prochaine échéance) :
+
+- **Support** : une page partagée et persistante, que l'humain remplit depuis n'importe quel
+  appareil et que l'agent relit (par exemple une page Artifact avec base de données ; à défaut
+  une issue épinglée à cases, ou une vue du Project). Le contenu vit dans les données, pas dans
+  le code de la page : la même page sert de modèle d'une release à l'autre.
+- **Trois blocs** :
+  1. **À vérifier** — une ligne par point, états *À faire / OK / Problème / Reporté* et une
+     note libre. On y met : la mise à jour réelle depuis la version précédente ; l'usage réel
+     de la version publiée ; les réserves levées sans test sur l'alpha, à confirmer dès que
+     l'occasion se présente ; les bugs connus du backlog à reproduire, candidats du prochain
+     patch ; la préparation de l'échéance suivante.
+  2. **Décisions** — chaque décision qui attend l'humain, avec ses options cliquables, la
+     recommandation de l'agent signalée, et une note libre.
+  3. **Journal** — constats datés : jour, poste ou plateforme, importance (bloquant, gênant,
+     détail, idée), une ligne de texte.
+- **Taille proportionnelle à la release** : une minor importante en remonte beaucoup, un patch
+  quelques-uns. Ne pas gonfler la liste.
+- **Relecture** à la demande de l'humain : l'agent lit les données, ouvre une issue par
+  problème ou constat bloquant ou gênant, range les candidats dans le prochain lot et applique
+  les décisions. Une décision cochée sur la page vaut instruction de l'humain ; une action
+  irréversible (fusion, publication) se confirme quand même dans la conversation.
+- **Clôture** : la case de mise à jour réelle cochée clôt le lot publié. Les constats
+  alimentent la composition du lot suivant et la rétrospective avant une minor (§4 ter).
+- **Confidentialité** : aucune donnée réelle d'utilisateur (contenus, documents, captures
+  privées) dans la page ni dans les issues qui en sortent.
 
 ## 7. Optimisation du temps CI/CD (principe permanent)
 
