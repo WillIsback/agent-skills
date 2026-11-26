@@ -1,0 +1,38 @@
+# Pipeline « lots de version semver » — voir AGENTS.md et le skill semver-batch-workflow.
+# Jobs de MR (gates bloquantes) + release sur main. Chaque gate ne s'exécute que si les
+# fichiers qui la concernent changent (rules:changes), sauf la traçabilité (toujours sur MR).
+stages:
+  - quality
+  - test
+  - security
+  - release
+
+# Évite les pipelines en double : MR pour les branches de travail, pipeline de branche
+# seulement sur main (release), plus les pipelines planifiés et manuels (web).
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+default:
+  interruptible: true
+
+include:
+  # Gates propres au projet (couches common + profil).
+  - local: '.gitlab/ci/code-quality.yml'
+  - local: '.gitlab/ci/test.yml'
+  - local: '.gitlab/ci/security.yml'
+  - local: '.gitlab/ci/traceability.yml'
+  - local: '.gitlab/ci/release.yml'
+  # Gates GitLab natives (remplacent CodeQL / Dependency Review / Gitleaks dédiés) :
+  # produisent les widgets de sécurité de la MR. SAST et Secret Detection sont inclus
+  # dans le plan gratuit ; Dependency Scanning complet demande Ultimate.
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
+# Les jobs des templates GitLab tournent dans le stage « test ».
+variables:
+  SECURE_LOG_LEVEL: "info"

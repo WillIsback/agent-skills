@@ -1,0 +1,39 @@
+# Gate sécurité : registre d'exceptions + scan Trivy du système de fichiers.
+# SAST, Secret Detection et Dependency Scanning viennent des templates GitLab
+# (voir .gitlab-ci.yml) et produisent les widgets de sécurité de la MR.
+
+exceptions-registry:
+  stage: security
+  image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  timeout: 10 minutes
+  script:
+    - uv run --no-project --with pyyaml==6.0.3 python scripts/ci/check_security_exceptions.py
+
+trivy-fs:
+  stage: security
+  image:
+    name: aquasec/trivy:0.76.0
+    entrypoint: [""]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  timeout: 15 minutes
+  variables:
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+  cache:
+    key: trivy-db
+    paths:
+      - .trivycache/
+  script:
+    - trivy --version
+    - >
+      trivy fs
+      --scanners vuln
+      --severity HIGH,CRITICAL
+      --ignorefile .trivyignore
+      --exit-code 1
+      .

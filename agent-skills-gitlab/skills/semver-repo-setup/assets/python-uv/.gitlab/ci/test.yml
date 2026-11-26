@@ -1,0 +1,60 @@
+# Tests : pytest (unitaires, sans réseau : LLM et embeddings simulés), si du Python change.
+# >>> docker
+# L'image Docker est construite SANS publication si le Dockerfile ou les dépendances
+# changent : valide le build en relisant le cache de couches du registre (les MR lisent
+# ce cache, la release l'écrit).
+# <<< docker
+
+test:
+  stage: test
+  image: ghcr.io/astral-sh/uv:python__PYTHON_VERSION__-bookworm-slim
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "**/*.py"
+        - pyproject.toml
+        - uv.lock
+        - .gitlab/ci/test.yml
+  timeout: 15 minutes
+  variables:
+    UV_CACHE_DIR: .uv-cache
+  cache:
+    key:
+      files:
+        - uv.lock
+    paths:
+      - .uv-cache
+  coverage: '/TOTAL.+?(\d+%)/'
+  script:
+    - uv sync --locked
+    - uv run pytest -m "not integration" --junitxml=report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+
+# >>> docker
+docker-build:
+  stage: test
+  image: docker:27-cli
+  services:
+    - docker:27-dind
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - Dockerfile
+        - .dockerignore
+        - pyproject.toml
+        - uv.lock
+        - .gitlab/ci/test.yml
+  timeout: 20 minutes
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - docker buildx create --use >/dev/null
+    - >
+      docker buildx build
+      --build-arg VERSION=0.0.0.dev0
+      --cache-from "type=registry,ref=$CI_REGISTRY_IMAGE:buildcache"
+      -t ci-image:test .
+# <<< docker

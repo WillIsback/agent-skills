@@ -1,0 +1,51 @@
+# Traçabilité : titre de MR Conventional Commits, issue référencée, cohérence semver.
+# Toujours exécutée sur une MR : garantit que le pipeline n'est jamais vide.
+
+traceability:
+  stage: quality
+  image: alpine:3.20
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  timeout: 5 minutes
+  script:
+    - |
+      set -eu
+
+      # 1. Titre de MR au format Conventional Commits.
+      PATTERN='^(feat|fix|refactor|docs|test|chore|perf|ci|build|revert)(\(.+\))?!?: .+'
+      if ! printf '%s' "$CI_MERGE_REQUEST_TITLE" | grep -qE "$PATTERN"; then
+        echo "❌ Titre de MR non conforme à Conventional Commits : $CI_MERGE_REQUEST_TITLE"
+        exit 1
+      fi
+      echo "✅ Titre de MR valide."
+
+      # 2. Référence d'issue obligatoire (sauf MR de dépendances, label « dependencies »).
+      if printf '%s' "$CI_MERGE_REQUEST_LABELS" | grep -q 'dependencies'; then
+        echo "ℹ️  MR de dépendances : traçabilité d'issue non applicable."
+      elif printf '%s' "$CI_MERGE_REQUEST_DESCRIPTION" | grep -qE '(Closes|Related to|Task:)[[:space:]]+#[0-9]+'; then
+        echo "✅ Issue(s) référencée(s) :"
+        printf '%s' "$CI_MERGE_REQUEST_DESCRIPTION" | grep -oE '(Closes|Related to|Task:)[[:space:]]+#[0-9]+'
+      else
+        echo "❌ Aucune référence d'issue dans la description de la MR."
+        echo "   Obligation : au moins une ligne 'Closes #...', 'Related to #...' ou 'Task: #...'"
+        exit 1
+      fi
+
+      # 3. Cohérence du bump semver déclaré avec le titre (alerte non bloquante).
+      DECLARED=unset
+      if   printf '%s' "$CI_MERGE_REQUEST_DESCRIPTION" | grep -q '\[x\].*Patch'; then DECLARED=patch
+      elif printf '%s' "$CI_MERGE_REQUEST_DESCRIPTION" | grep -q '\[x\].*Minor'; then DECLARED=minor
+      elif printf '%s' "$CI_MERGE_REQUEST_DESCRIPTION" | grep -q '\[x\].*Major'; then DECLARED=major
+      elif printf '%s' "$CI_MERGE_REQUEST_DESCRIPTION" | grep -q '\[x\].*Aucune release'; then DECLARED=none
+      fi
+      INFERRED=none
+      if   printf '%s' "$CI_MERGE_REQUEST_TITLE" | grep -qE '^[a-z]+(\(.+\))?!:'; then INFERRED=major
+      elif printf '%s' "$CI_MERGE_REQUEST_TITLE" | grep -qE '^feat'; then INFERRED=minor
+      elif printf '%s' "$CI_MERGE_REQUEST_TITLE" | grep -qE '^(fix|perf)'; then INFERRED=patch
+      fi
+      echo "Bump déclaré : $DECLARED — inféré du titre : $INFERRED"
+      if [ "$DECLARED" != unset ] && [ "$DECLARED" != "$INFERRED" ]; then
+        echo "⚠️  Incohérence semver (alerte non bloquante) : la release utilise les commits de main."
+      else
+        echo "✅ Cohérence semver vérifiée."
+      fi

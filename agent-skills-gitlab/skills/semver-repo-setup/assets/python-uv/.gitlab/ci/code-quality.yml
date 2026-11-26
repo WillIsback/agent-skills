@@ -1,0 +1,32 @@
+# Qualité du code Python : ruff (lint, format), mypy strict, lockfile uv.
+# Ne tourne que si du Python ou ses dépendances changent.
+
+code-quality:
+  stage: quality
+  image: ghcr.io/astral-sh/uv:python__PYTHON_VERSION__-bookworm-slim
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "**/*.py"
+        - pyproject.toml
+        - uv.lock
+        - .gitlab/ci/code-quality.yml
+  timeout: 10 minutes
+  variables:
+    UV_CACHE_DIR: .uv-cache
+  cache:
+    key:
+      files:
+        - uv.lock
+    paths:
+      - .uv-cache
+  script:
+    - uv sync --locked
+    # Rapport Code Quality pour le widget de MR (n'échoue pas), puis contrôle strict.
+    - uv run ruff check --output-format=gitlab --exit-zero . > gl-code-quality-report.json || true
+    - uv run ruff check .
+    - uv run ruff format --check .
+    - uv run mypy
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json

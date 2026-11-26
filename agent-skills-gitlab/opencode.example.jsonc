@@ -1,0 +1,23 @@
+// Exemple de configuration OpenCode pour utiliser ces skills et le serveur MCP CodeGraph.
+// Copier en opencode.json (projet) ou ~/.config/opencode/opencode.json (global), puis adapter.
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Rend ces skills découvrables (chemin du dépôt cloné). Combiné aux dossiers
+  // standards (.opencode/skills, ~/.config/opencode/skills, .claude/skills…).
+  "skills": ["./agent-skills-gitlab/skills"],
+
+  // Charger CONTRIBUTING.md en plus d'AGENTS.md (OpenCode n'a pas d'import @file).
+  "instructions": ["AGENTS.md", "CONTRIBUTING.md"],
+
+  // Serveur MCP CodeGraph (index de code). En « Code Mode » (défaut V2), ses outils
+  // sont appelés via tools.codegraph.<outil>() ; la politique de base les autorise déjà.
+  "mcp": {
+    "servers": {
+      "codegraph": {
+        "type": "local",
+        "command": ["codegraph", "serve", "--mcp"]
+      }
+    }
+  }
+}

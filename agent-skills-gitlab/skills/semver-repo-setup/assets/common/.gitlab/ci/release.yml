@@ -1,0 +1,176 @@
+# Release (CD) — voir le §6 du skill semver-batch-workflow.
+# Push d'une MR de lot sur main (ou déclenchement manuel « web » avec BUMP et DRY_RUN) :
+#   1. version semver calculée depuis les commits depuis le dernier tag ;
+#   2. gate de cohérence de version ;
+#   3. [docker] image construite UNE fois, scannée (Trivy), publiée sur le Container Registry ;
+#   4. tag vX.Y.Z et GitLab Release (changelog).
+# Lint, tests, SAST et SCA ont déjà tourné sur la MR de lot : pas rejoués ici.
+# Les blocs « docker » sont retirés par scaffold.py si le projet n'a pas d'image.
+#
+# Déclenchement manuel : CI/CD → Run pipeline sur main, variables BUMP (auto|patch|minor|
+# major|none) et DRY_RUN (true = build/évaluation sans publication).
+
+detect:
+  stage: release
+  image: alpine:3.20
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "web"
+  timeout: 5 minutes
+  variables:
+    GIT_DEPTH: "0" # historique complet pour lire les tags
+  script:
+    - apk add --no-cache git >/dev/null
+    - |
+      set -eu
+      git fetch --tags --quiet || true
+      if [ "$CI_PIPELINE_SOURCE" = "push" ] && git log -1 --format=%s | grep -qiE '\[skip release\]'; then
+        echo "🔇 Commit marqué [skip release]."
+        { echo "VERSION=skipped"; echo "BUMP=none"; } > release.env; exit 0
+      fi
+      LAST_TAG=$(git tag -l 'v[0-9]*' --sort=-version:refname | head -1 || true)
+      RANGE="${LAST_TAG:+$LAST_TAG..}HEAD"
+      BASE="${LAST_TAG:-v0.0.0}"; V="${BASE#v}"
+      MAJOR="${V%%.*}"; REST="${V#*.}"; MINOR="${REST%%.*}"; PATCH="${REST#*.}"
+      WANT="${BUMP:-auto}"
+      if [ "$WANT" != auto ] && [ -n "$WANT" ]; then
+        NEWBUMP="$WANT"
+      else
+        NEWBUMP=none
+        git log --format=%s "$RANGE" > /tmp/commits.txt || true
+        while IFS= read -r C; do
+          [ -z "$C" ] && continue
+          if printf '%s' "$C" | grep -qE '^[a-zA-Z]+(\(.+\))?!:'; then NEWBUMP=major
+          elif printf '%s' "$C" | grep -qE '^feat(\(.+\))?:' && [ "$NEWBUMP" != major ]; then NEWBUMP=minor
+          elif printf '%s' "$C" | grep -qE '^(fix|perf)(\(.+\))?:' && [ "$NEWBUMP" = none ]; then NEWBUMP=patch
+          fi
+        done < /tmp/commits.txt
+      fi
+      echo "Dernier tag : ${LAST_TAG:-aucun} — bump : $NEWBUMP"
+      if [ "$NEWBUMP" = none ]; then
+        echo "ℹ️  Aucun commit éligible (feat/fix/perf) : pas de release."
+        { echo "VERSION=skipped"; echo "BUMP=none"; } > release.env; exit 0
+      fi
+      case "$NEWBUMP" in
+        major) MAJOR=$((MAJOR+1)); MINOR=0; PATCH=0 ;;
+        minor) MINOR=$((MINOR+1)); PATCH=0 ;;
+        patch) PATCH=$((PATCH+1)) ;;
+      esac
+      VERSION="v$MAJOR.$MINOR.$PATCH"
+      echo "Version calculée : $VERSION"
+      { echo "VERSION=$VERSION"; echo "BUMP=$NEWBUMP"; } > release.env
+  artifacts:
+    reports:
+      dotenv: release.env
+
+gate-version-consistency:
+  stage: release
+  image: alpine:3.20
+  needs: ["detect"]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push" && $VERSION != "skipped"
+    - if: $CI_PIPELINE_SOURCE == "web" && $VERSION != "skipped"
+  timeout: 5 minutes
+  variables:
+    GIT_DEPTH: "0"
+  script:
+    - apk add --no-cache git >/dev/null
+    - |
+      set -eu
+      git fetch --tags --quiet || true
+      if git ls-remote --tags origin "refs/tags/$VERSION" | grep -q .; then
+        echo "❌ Le tag $VERSION existe déjà."; exit 1
+      fi
+      LAST_TAG=$(git tag -l 'v[0-9]*' --sort=-version:refname | head -1 || true)
+      LAST_TAG="${LAST_TAG:-v0.0.0}"
+      HIGHEST=$(printf '%s\n%s\n' "$LAST_TAG" "$VERSION" | sort -V | tail -1)
+      if [ "$HIGHEST" != "$VERSION" ] || [ "$LAST_TAG" = "$VERSION" ]; then
+        echo "❌ $VERSION n'est pas supérieure à $LAST_TAG."; exit 1
+      fi
+      echo "✅ $VERSION > $LAST_TAG"
+
+# >>> docker
+image:
+  stage: release
+  image: docker:27-cli
+  services:
+    - docker:27-dind
+  needs: ["detect", "gate-version-consistency"]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push" && $VERSION != "skipped"
+    - if: $CI_PIPELINE_SOURCE == "web" && $DRY_RUN != "true" && $VERSION != "skipped"
+  timeout: 30 minutes
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker buildx create --use >/dev/null
+    - |
+      set -eu
+      docker buildx build --load \
+        --build-arg VERSION="$VERSION" \
+        --label "org.opencontainers.image.source=$CI_PROJECT_URL" \
+        --label "org.opencontainers.image.version=$VERSION" \
+        --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" \
+        --cache-from "type=registry,ref=$CI_REGISTRY_IMAGE:buildcache" \
+        --cache-to "type=registry,ref=$CI_REGISTRY_IMAGE:buildcache,mode=max" \
+        -t "$CI_REGISTRY_IMAGE:$VERSION" -t "$CI_REGISTRY_IMAGE:latest" .
+    - |
+      set -eu
+      # Scan Trivy de l'image avant publication.
+      apk add --no-cache curl tar >/dev/null
+      TRIVY_VERSION=0.76.0
+      curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
+        | tar -xz -C /usr/local/bin trivy
+      trivy image --scanners vuln --ignore-unfixed --severity HIGH,CRITICAL \
+        --ignorefile .trivyignore --exit-code 1 "$CI_REGISTRY_IMAGE:$VERSION"
+    - docker push "$CI_REGISTRY_IMAGE:$VERSION"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+# <<< docker
+
+publish:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  # >>> docker
+  needs: ["detect", "gate-version-consistency", "image"]
+  # <<< docker
+  # >>> no-docker
+  needs: ["detect", "gate-version-consistency"]
+  # <<< no-docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push" && $VERSION != "skipped"
+    - if: $CI_PIPELINE_SOURCE == "web" && $DRY_RUN != "true" && $VERSION != "skipped"
+  timeout: 10 minutes
+  variables:
+    GIT_DEPTH: "0"
+  script:
+    - apk add --no-cache git >/dev/null
+    - |
+      set -eu
+      git fetch --tags --quiet || true
+      LAST_TAG=$(git tag -l 'v[0-9]*' --sort=-version:refname | grep -vxF "$VERSION" | head -1 || true)
+      {
+        echo "## [$VERSION] - $(date +%Y-%m-%d)"
+        echo ""
+        echo "### Changements depuis ${LAST_TAG:-le début}"
+        echo ""
+        git log "${LAST_TAG:+$LAST_TAG..}HEAD" --no-merges --format="* %s"
+        echo ""
+      } > changelog.md
+      # >>> docker
+      {
+        echo "### Image Docker"
+        echo ""
+        echo "\`docker run --rm -p 8000:8000 --env-file .env $CI_REGISTRY_IMAGE:$VERSION\`"
+        echo ""
+      } >> changelog.md
+      # <<< docker
+      cat changelog.md
+    - |
+      set -eu
+      release-cli create \
+        --name "__TITLE__ $VERSION" \
+        --tag-name "$VERSION" \
+        --ref "$CI_COMMIT_SHA" \
+        --description "$(cat changelog.md)"
+      echo "✅ Release $VERSION publiée."

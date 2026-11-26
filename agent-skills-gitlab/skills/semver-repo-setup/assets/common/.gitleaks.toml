@@ -1,0 +1,5 @@
+# Configuration Gitleaks : règles par défaut + exclusions justifiées.
+title = "__TITLE__"
+
+[extend]
+useDefault = true

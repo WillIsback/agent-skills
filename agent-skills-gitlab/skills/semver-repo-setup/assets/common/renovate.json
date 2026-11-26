@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
+  "timezone": "Europe/Paris",
+  "schedule": ["before 09:00 on monday"],
+  "labels": ["type::chore", "dependencies"],
+  "prConcurrentLimit": 5,
+  "lockFileMaintenance": { "enabled": true, "schedule": ["before 09:00 on monday"] },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "dépendances (minor + patch)",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps",
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "semanticCommitScope": "docker"
+    },
+    {
+      "matchManagers": ["gitlabci"],
+      "groupName": "images de pipeline",
+      "semanticCommitScope": "ci"
+    }
+  ]
+}
